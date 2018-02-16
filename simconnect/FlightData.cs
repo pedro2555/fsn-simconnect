@@ -72,6 +72,17 @@ namespace simconnect
         public bool OnGround
         { get; set; }
 
+        private static Offset<short> _qnh = new Offset<short>(0x0330);
+        private static short qnh
+        {
+            get
+            {
+                return Convert.ToInt16(_qnh.Value / 16);
+            }
+        }
+        public short QNH
+        { get; set; }
+
 
         public FlightData(bool InitializeComponent = true)
         {
@@ -97,6 +108,7 @@ namespace simconnect
             this.Altitude = altitude;
             this.GroundSpeed = groundspeed;
             this.OnGround = onground;
+            this.QNH = qnh;
         }
     }
 }

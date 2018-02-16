@@ -55,6 +55,9 @@ namespace simconnect
                     }
                     break;
                 case MonitorState.Monitoring:
+                    var data = new FlightData();
+                    Console.WriteLine("QNH {0}", data.QNH);
+
                     Console.WriteLine(api.needsPush(new FlightData()));
                     break;
             }
