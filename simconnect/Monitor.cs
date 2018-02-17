@@ -3,8 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
+using System.Threading;
 
 namespace simconnect
 {
@@ -19,8 +18,6 @@ namespace simconnect
     {
         FlightDataApi api;
 
-        Timer t;
-
         MonitorState state;
 
         public Monitor()
@@ -31,36 +28,36 @@ namespace simconnect
         public void InitializeComponent()
         {
             // API data
-            api = new FlightDataApi();
-
-            // Main timer
-            t = new Timer(1000);
-            t.Elapsed += T_Elapsed;
+            api = new FlightDataApi(@"https://fsn-flight-data.herokuapp.com");
 
             // Monitoring state
             state = MonitorState.AwaitSim;
 
-            t.Start();
-        }
-
-        private void T_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            switch (state)
+            Thread thread = new Thread(new ThreadStart(() =>
             {
-                case MonitorState.AwaitSim:
-                    if (ConnectToSim())
+                try
+                {
+                    while (true)
                     {
-                        state = MonitorState.Monitoring;
-                        t.Interval = 1000;
+                        switch (state)
+                        {
+                            case MonitorState.AwaitSim:
+                                if (ConnectToSim())
+                                    state = MonitorState.Monitoring;
+                                break;
+                            case MonitorState.Monitoring:
+                                api.Enqueue(new FlightData(true));
+                                break;
+                        }
                     }
-                    break;
-                case MonitorState.Monitoring:
-                    var data = new FlightData();
-                    Console.WriteLine("QNH {0}", data.QNH);
+                }
+                catch (Exception crap)
+                {
+                    Console.WriteLine(crap.Message);
+                }
+            }));
 
-                    Console.WriteLine(api.needsPush(new FlightData()));
-                    break;
-            }
+            thread.Start();
         }
 
         private bool ConnectToSim()
@@ -76,12 +73,13 @@ namespace simconnect
                 switch (crap.FSUIPCErrorCode)
                 {
                     case FSUIPCError.FSUIPC_ERR_NOFS:
-                        break;
+                        return false;
                     case FSUIPCError.FSUIPC_ERR_OPEN:
                         return true;
+                    default:
+                        throw crap;
                 }
             }
-            return false;
         }
     }
 }
