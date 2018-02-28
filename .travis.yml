@@ -7,5 +7,3 @@ deploy:
   api_key: "$GH_TOKEN"
   file: "build.zip"
   skip_cleanup: true
-  on:
-    tags: true
