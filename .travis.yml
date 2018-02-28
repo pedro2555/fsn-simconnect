@@ -1,6 +1,6 @@
 language: csharp
-solution: "./fsn/sfn.sln"
+solution: "./sfn.sln"
 install:
-- travis_retry nuget restore -source "https://www.nuget.org/api/v2" ./fsn/fsn.sln
+- travis_retry nuget restore -source "https://www.nuget.org/api/v2" ./fsn.sln
 script:
-- xbuild ./fsn/fsn.sln
+- xbuild ./fsn.sln
