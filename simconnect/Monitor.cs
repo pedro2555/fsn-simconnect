@@ -1,4 +1,5 @@
 ﻿using FSUIPC;
+using Newtonsoft.Json;
 using System;
 using System.Threading;
 
@@ -26,6 +27,14 @@ namespace simconnect
         {
             // API data
             api = new FlightDataApi(@"https://fsn-flight-data.herokuapp.com");
+            api.TransponderRegisteredEvent += Api_TransponderRegisteredEvent;
+
+            api.RegisterTransponder(Properties.Settings.Default.transponder);
+
+            NewFlightDataEvent += Monitor_NewFlightDataEvent;
+
+            if (Properties.Settings.Default.transponder != "")
+                Console.WriteLine("Your ID: {0}", Properties.Settings.Default.transponder);
 
             // Monitoring state
             state = MonitorState.AwaitSim;
@@ -43,7 +52,10 @@ namespace simconnect
                                     state = MonitorState.Monitoring;
                                 break;
                             case MonitorState.Monitoring:
-                                api.Enqueue(new FlightData(true));
+                                FlightData newData = new FlightData(true);
+                                NewFlightDataEvent(newData);
+
+                                //api.Enqueue(newData);
                                 break;
                         }
                     }
@@ -55,6 +67,23 @@ namespace simconnect
             }));
 
             thread.Start();
+        }
+
+        private void Monitor_NewFlightDataEvent(FlightData flightData)
+        {
+            Console.Clear();
+            Console.WriteLine(JsonConvert.SerializeObject(flightData, Formatting.Indented));
+        }
+
+        public delegate void NewFlightDataEventHandler(FlightData flightData);
+
+        public event NewFlightDataEventHandler NewFlightDataEvent;
+
+        private void Api_TransponderRegisteredEvent(object sender, string transponder)
+        {
+            Properties.Settings.Default.transponder = transponder;
+            Properties.Settings.Default.Save();
+            Console.WriteLine("Your ID: {0}", Properties.Settings.Default.transponder);
         }
 
         private bool ConnectToSim()

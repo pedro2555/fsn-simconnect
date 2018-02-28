@@ -12,10 +12,29 @@ namespace simconnect
     {
         public struct GeoJsonPoint
         {
+            public override bool Equals(object obj)
+            {
+                return base.Equals(obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return base.GetHashCode();
+            }
+
+            public static bool operator !=(GeoJsonPoint obj1, GeoJsonPoint obj2)
+            {
+                return (obj1.Coordinates != obj2.Coordinates);
+            }
+            public static bool operator ==(GeoJsonPoint obj1, GeoJsonPoint obj2)
+            {
+                return (obj1.Coordinates == obj2.Coordinates);
+            }
+
             [JsonProperty(PropertyName = "type")]
             public string Type
             {
-                get { return "point"; }
+                get { return "Point"; }
                 set { }
             }
 
@@ -28,6 +47,11 @@ namespace simconnect
         [JsonProperty(PropertyName = "timestamp")]
         [DeserializeAs(Name = "timestamp")]
         public DateTime TimeStamp
+        { get; set; }
+
+        [JsonProperty(PropertyName = "transponder")]
+        [DeserializeAs(Name = "transponder")]
+        public string Transponder
         { get; set; }
 
         /// <summary>
@@ -96,8 +120,8 @@ namespace simconnect
         /// static proterty for correctly processing Offset data
         /// instance property
         /// </summary>
-        private static Offset<short> _altitude = new Offset<short>(0x3324);
-        private static short altitude
+        private static Offset<int> _altitude = new Offset<int>(0x3324);
+        private static int altitude
         {
             get
             {
@@ -106,7 +130,7 @@ namespace simconnect
         }
         [JsonProperty(PropertyName = "altitude")]
         [DeserializeAs(Name = "altitude")]
-        public short Altitude
+        public int Altitude
         { get; set; }
 
         /// <summary>
@@ -116,19 +140,59 @@ namespace simconnect
         /// static proterty for correctly processing Offset data
         /// instance property
         /// </summary>
-        private static Offset<short> _groundspeed = new Offset<short>(0x02B4);
-        private static short groundspeed
+        private static Offset<int> _groundspeed = new Offset<int>(0x02B4);
+        private static int groundspeed
         {
             get
             {
-                return Convert.ToInt16((_groundspeed.Value / 65536) * 1.94384449);
+                return Convert.ToInt32((_groundspeed.Value / 65536) * 1.94384449);
             }
         }
         [JsonProperty(PropertyName = "groundspeed")]
         [DeserializeAs(Name = "groundspeed")]
-        public short GroundSpeed
+        public int GroundSpeed
         { get; set; }
-        
+
+        /// <summary>
+        /// Indicated Airspeed
+        /// 
+        /// Offsets
+        /// static proterty for correctly processing Offset data
+        /// instance property
+        /// </summary>
+        private static Offset<int> _indicatedairspeed = new Offset<int>(0x02BC);
+        private static int indicatedairspeed
+        {
+            get
+            {
+                return _indicatedairspeed.Value / 128;
+            }
+        }
+        [JsonProperty(PropertyName = "indicatedairspeed")]
+        [DeserializeAs(Name = "indicatedairspeed")]
+        public int IndicatedAirspeed
+        { get; set; }
+
+        /// <summary>
+        /// True Airspeed
+        /// 
+        /// Offsets
+        /// static proterty for correctly processing Offset data
+        /// instance property
+        /// </summary>
+        private static Offset<int> _trueairspeed = new Offset<int>(0x02B8);
+        private static int trueairspeed
+        {
+            get
+            {
+                return _trueairspeed.Value / 128;
+            }
+        }
+        [JsonProperty(PropertyName = "trueairspeed")]
+        [DeserializeAs(Name = "trueairspeed")]
+        public int TrueAirpeed
+        { get; set; }
+
         /// <summary>
         /// On ground value
         /// 
@@ -162,6 +226,8 @@ namespace simconnect
                 return Convert.ToInt16(_qnh.Value / 16);
             }
         }
+        [JsonProperty(PropertyName = "qnh")]
+        [DeserializeAs(Name = "qnh")]
         public short QNH
         { get; set; }
 
@@ -191,6 +257,8 @@ namespace simconnect
             this.Compass = compass;
             this.Altitude = altitude;
             this.GroundSpeed = groundspeed;
+            this.IndicatedAirspeed = indicatedairspeed;
+            this.TrueAirpeed = trueairspeed;
             this.OnGround = onground;
             this.QNH = qnh;
         }
@@ -218,7 +286,7 @@ namespace simconnect
                 if ((dynamic)property.GetValue(obj1) != (dynamic)property.GetValue(obj2))
                     property.SetValue(res, property.GetValue(obj1));
             }
-
+            res.Transponder = obj2.Transponder;
             return res;
         }
     }
