@@ -1,2 +1,2 @@
 language: csharp
-solution: "./sfn.sln"
+solution: "./fsn.sln"
