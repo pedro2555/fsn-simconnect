@@ -1,2 +1,11 @@
 language: csharp
 solution: "./fsn.sln"
+after_success:
+- zip -r build.zip simconnect/bin/Release
+deploy:
+  provider: releases
+  api_key: "$GH_TOKEN"
+  file: "build.zip"
+  skip_cleanup: true
+  on:
+    tags: true
