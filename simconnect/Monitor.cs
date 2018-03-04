@@ -55,7 +55,7 @@ namespace simconnect
                                 FlightData newData = new FlightData(true);
                                 NewFlightDataEvent(newData);
 
-                                //api.Enqueue(newData);
+                                api.Enqueue(newData);
                                 break;
                         }
                     }
