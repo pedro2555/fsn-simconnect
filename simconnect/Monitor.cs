@@ -62,7 +62,7 @@ namespace simconnect
                 }
                 catch (Exception crap)
                 {
-                    Console.WriteLine(crap.Message);
+                    Console.WriteLine(JsonConvert.SerializeObject(crap, Formatting.Indented));
                 }
             }));
 
