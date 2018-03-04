@@ -83,18 +83,18 @@ namespace simconnect
         {
             if ((lastSentData == null) // this is the base case
                                        // turns of more than 5 degrees
-                || (CompassDelta(data.Compass, lastSentData.Compass) > 5)
+                || (CompassDelta(data.Compass, lastSentData.Compass) > 7)
                 // altitude changes of more than 50ft
-                //|| (Math.Abs(data.Altitude - lastSentData.Altitude) > 50)
+                || (Math.Abs(data.Altitude - lastSentData.Altitude) > 150)
                 // groundspeed changes of more than 10kts
-                || (Math.Abs(data.GroundSpeed - lastSentData.GroundSpeed) > 10)
+                || (Math.Abs(data.GroundSpeed - lastSentData.GroundSpeed) > 27)
                 // on ground we should be a bit more agreesive
                 || (data.OnGround &&
                     // movements over 100 meters
-                    (lastSentData.Position.GetDistanceTo(data.Position) > 100))
+                    (lastSentData.Position.GetDistanceTo(data.Position) > 15))
                 || (!data.OnGround &&
                     // movements over 5 Km
-                    (lastSentData.Position.GetDistanceTo(data.Position) > 5000))
+                    (lastSentData.Position.GetDistanceTo(data.Position) > 5700))
                 // more than 5minute without a report
                 || ((data.TimeStamp - lastSentData.TimeStamp).TotalMinutes > 5))
             {
