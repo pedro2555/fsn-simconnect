@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace simconnect
 {
@@ -62,7 +63,9 @@ namespace simconnect
                 }
                 catch (Exception crap)
                 {
-                    Console.WriteLine(JsonConvert.SerializeObject(crap, Formatting.Indented));
+                    string errorJsonify = JsonConvert.SerializeObject(crap, Formatting.Indented);
+                    Clipboard.SetText(errorJsonify);
+                    Console.WriteLine(errorJsonify);
                 }
             }));
 
@@ -71,7 +74,7 @@ namespace simconnect
 
         private void Monitor_NewFlightDataEvent(FlightData flightData)
         {
-            Console.Clear();
+            //Console.Clear();
             //Console.WriteLine(JsonConvert.SerializeObject(flightData, Formatting.Indented));
         }
 
@@ -83,6 +86,7 @@ namespace simconnect
         {
             Properties.Settings.Default.transponder = transponder;
             Properties.Settings.Default.Save();
+            Clipboard.SetText(Properties.Settings.Default.transponder);
             Console.WriteLine("Your ID: {0}", Properties.Settings.Default.transponder);
         }
 
@@ -103,7 +107,8 @@ namespace simconnect
                     case FSUIPCError.FSUIPC_ERR_OPEN:
                         return true;
                     default:
-                        throw crap;
+                        Console.WriteLine(crap.FSUIPCErrorCode);
+                        return false;
                 }
             }
         }
