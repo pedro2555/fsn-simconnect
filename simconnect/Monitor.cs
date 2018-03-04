@@ -72,7 +72,7 @@ namespace simconnect
         private void Monitor_NewFlightDataEvent(FlightData flightData)
         {
             Console.Clear();
-            Console.WriteLine(JsonConvert.SerializeObject(flightData, Formatting.Indented));
+            //Console.WriteLine(JsonConvert.SerializeObject(flightData, Formatting.Indented));
         }
 
         public delegate void NewFlightDataEventHandler(FlightData flightData);
