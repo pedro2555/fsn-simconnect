@@ -39,11 +39,14 @@ namespace simconnect
         {
             request.AddHeader("Content-Type", "application/json");
 
-            request.AddParameter(
-                "application/json",
-                JsonConvert.SerializeObject(obj, SerializationSettings),
-                ParameterType.RequestBody);
-            string te = JsonConvert.SerializeObject(obj, SerializationSettings);
+            if (obj != null)
+            {
+                request.AddParameter(
+                    "application/json",
+                    JsonConvert.SerializeObject(obj, SerializationSettings),
+                    ParameterType.RequestBody);
+                string te = JsonConvert.SerializeObject(obj, SerializationSettings);
+            }
             new RestClient(BaseUrl).ExecuteAsync<K>(request, (response) =>
             {
                 if (response.StatusCode == System.Net.HttpStatusCode.Created)

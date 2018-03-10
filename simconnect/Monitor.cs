@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using System;
 using System.Threading;
-using System.Windows.Forms;
 
 namespace simconnect
 {
@@ -64,7 +63,6 @@ namespace simconnect
                 catch (Exception crap)
                 {
                     string errorJsonify = JsonConvert.SerializeObject(crap, Formatting.Indented);
-                    Clipboard.SetText(errorJsonify);
                     Console.WriteLine(errorJsonify);
                 }
             }));
@@ -86,7 +84,6 @@ namespace simconnect
         {
             Properties.Settings.Default.transponder = transponder;
             Properties.Settings.Default.Save();
-            Clipboard.SetText(Properties.Settings.Default.transponder);
             Console.WriteLine("Your ID: {0}", Properties.Settings.Default.transponder);
         }
 
